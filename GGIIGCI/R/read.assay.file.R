@@ -45,3 +45,8 @@ read.assay.file <- function(dir="./", pattern, plate.num = 4, skip = 11, out.pla
   }
   return(output)
 }
+
+selfhead <- function(x, ncol=5, nrow=5) {
+  print(dim(x))
+  print(x[1:ncol, 1:nrow])
+}

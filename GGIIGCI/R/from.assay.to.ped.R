@@ -19,7 +19,11 @@ convert.sds.to.allele <- function(rs, allele1 = NA, allele2 = NA, is.num = F) {
   out <- rep(NA, length(rs))
   for(i in 1:length(rs)) {
     n <- rs[i]
-    if (n=="vic") {
+    #print(n)
+    if (is.na(n)){
+      out[i] <- miss
+    }
+    else if (n == "vic") {
       out[i] <- vic
     } 
     else if (n == "fam") {
@@ -35,8 +39,8 @@ convert.sds.to.allele <- function(rs, allele1 = NA, allele2 = NA, is.num = F) {
   return(out)
 }
 
-from.assay.to.ped <- function(assay, snp.info, sample.info, is.sample.info = F, 
-                              col.names.convert = F, fam.id = F, is.num = T, write.file = F){
+from.assay.to.ped <- function(assay, snp.info, sample.info=NA, is.sample.info = F, 
+                              col.names.convert = T, fam.id = F, is.num = T, write.file = F){
   
   if (!is.data.frame(assay) | !is.data.frame(snp.info)){
     stop("assay or snp.info must be a data.frame!\n")
@@ -52,13 +56,15 @@ from.assay.to.ped <- function(assay, snp.info, sample.info, is.sample.info = F,
     }
   }
   if (fam.id) {
-    if (is.data.frame(sample.info)){
+    if (!is.data.frame(sample.info)){
       stop("The sample.info is required when fam.id is TRUE.\n")
     }
   }
   
   if(col.names.convert) {
-    if (dim(snp.info[which(is.na(snp.info$ABI.ID)& is.na(snp.info$Assays.name)), ])[1]!=0){
+    snp.info[which(snp.info$ABI.ID=="" | is.null(snp.info$ABI.ID)), ]$ABI.ID <- NA
+    snp.info[which(snp.info$Assays.name=="" | is.null(snp.info$Assays.name)), ]$Assays.name <- NA
+    if (dim(snp.info[which(is.na(snp.info$ABI.ID) & is.na(snp.info$Assays.name)), ])[1]!=0){
       stop("Required information of ABI.ID or Assays.name missing.\n")
     }
     for(i in 1:dim(snp.info)[1]) {
@@ -94,9 +100,14 @@ from.assay.to.ped <- function(assay, snp.info, sample.info, is.sample.info = F,
                     Phen = rep(-9, c))
   for (i in 3:r) {
     temp.snp <- colnames(assay)[i]
+    #print(temp.snp)
+    #print(snp.info[which(snp.info$Assays.name==temp.snp), ]$allele1)
     allele1 <- snp.info[which(snp.info$Assays.name==temp.snp), ]$allele1
     allele2 <- snp.info[which(snp.info$Assays.name==temp.snp), ]$allele2
+    #print(allele2)
+    #print(length(assay[, i]))
     temp.snp.vector <- convert.sds.to.allele(assay[, i], allele1 = allele1, allele2 = allele2, is.num = is.num)
+    #print(temp.snp.vector)
     ped[, i+4] <- temp.snp.vector
     colnames(ped)[i+4] <- temp.snp
   }
@@ -104,6 +115,7 @@ from.assay.to.ped <- function(assay, snp.info, sample.info, is.sample.info = F,
   if (is.sample.info) {
     ped <- ped[, -c(1,3,4,5,6)]
     ped <- merge(sample.info, ped, by = c("Sample.Name"), all.x = T)
+    ped <- ped[, c(2,1, 3:dim(ped)[2])]
   }
   
   return(ped)
