@@ -3,7 +3,7 @@ setwd("~/Desktop/data_from_HG/my_own_package/GGIGCI/")
 source("R/from.assay.to.ped.R")
 source("R/read.assay.file.R")
 source("R/igci.R")
-source("R/from.ped.to.snpMatrix.R")
+source("R/read.ped.to.snpMatrix.R")
 require(openssl)
 
 data.total.1536 <- read.assay.file(dir = "data_first_20190116/", pattern = "AZ")
@@ -29,5 +29,10 @@ sample.info[which(sample.info$Phen=="SZ"), ]$Phen <- 2
 
 data.ped <- from.assay.to.ped(data.total.1536, snp.info = snp.info, sample.info = sample.info, 
                               is.sample.info = T)
-write.table(data.ped, file = "data/data.ped", quote = F, sep = "\t", col.names = F)
-read.ped.to.snpMatrix("data_first_20190116/data.ped", "data_first_20190116/data.txt")
+write.table(data.ped, file = "data/data.ped", quote = F, sep = "\t", col.names = F, row.names = F)
+write.table(data.ped, file = "data/data.with.header.ped", quote = F, sep = "\t", col.names = T, row.names = F)
+#res <- read.ped.to.snpMatrix(ped = "data/data.ped", info = snp2gene, 
+                             snp.list = snp.list, ped.header = F, ped.sep = "\t")
+res <- read.ped.to.snpMatrix(ped = "data/data.with.header.ped", ped.header = T, info = snp2gene)
+
+
