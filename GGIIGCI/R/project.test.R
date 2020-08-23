@@ -4,6 +4,7 @@ source("R/from.assay.to.ped.R")
 source("R/read.assay.file.R")
 source("R/igci.R")
 source("R/read.ped.to.snpMatrix.R")
+source("R/impute.res.R")
 require(openssl)
 
 data.total.1536 <- read.assay.file(dir = "data_first_20190116/", pattern = "AZ")
@@ -34,5 +35,11 @@ write.table(data.ped, file = "data/data.with.header.ped", quote = F, sep = "\t",
 #res <- read.ped.to.snpMatrix(ped = "data/data.ped", info = snp2gene, 
                              snp.list = snp.list, ped.header = F, ped.sep = "\t")
 res <- read.ped.to.snpMatrix(ped = "data/data.with.header.ped", ped.header = T, info = snp2gene)
+
+temp.im <- impute.res(res, removed = "sample")
+#removed 45 sample in the raw data
+
+
+
 
 

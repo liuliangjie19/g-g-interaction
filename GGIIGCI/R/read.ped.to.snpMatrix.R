@@ -13,8 +13,17 @@ read.ped.to.snpMatrix <- function(ped, info, snp.list = NA, ped.header = T, ped.
   if (file.type!=".ped") {
     stop(paste0("The file type of ", ped, " is not .ped.\n"))
   }
-  if (dim(info)[2]!=4) {
-    stop("The cols of info should be Chr, Gene, Snp and Position.\n")
+  if (class(info)!="character") {
+    if (dim(info)[2]!=4) {
+      stop("The cols of info should be Chr, Gene, Snp and Position.\n")
+    }
+    #res[["info"]] <- info
+  } else {
+    info <- read.table(info, header = T, sep = "\t")
+    if (dim(info)[2]!=4){
+      stop("The cols of info should be Chr, Gene, Snp and Position.\n")
+    }
+    #res[["info"]] <- info
   }
   #if (dim(info)[1]!=dim(ped)[1]-6) {
   #  stop("The number of SNPs in info isn't equal to the number of SNPs in the ped data.\n")
@@ -40,7 +49,12 @@ read.ped.to.snpMatrix <- function(ped, info, snp.list = NA, ped.header = T, ped.
   else {
     res[["ped"]] <- snpStats::read.pedfile(ped, snps = snp.list)
   }
+  
+  #The cols of info should be Chr, Gene, Snp and Position.
+  rownames(info) <- info[, 3]
+  info <- info[colnames(res[["ped"]][["genotypes"]]), ]
   res[["info"]] <- info
   
+  #res <- as(res, "GGIGCI")
   return(res)
 }
