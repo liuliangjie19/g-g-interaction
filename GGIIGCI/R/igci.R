@@ -159,6 +159,12 @@ IGCIfor2value <- function(data, sample.size = 100, times = 100, refMeasure = "g"
     }
   }
   f.mean <- c(f1/F1, f2/F2)
+  if (F1==0){
+    f.mean[1] <- NA
+  }
+  if (F2==0){
+    f.mean[2] <- NA
+  }
   if (F1 > F2) {
     p.value <- 1 - F1/times
     causal <- paste0(colnames(data)[1],"->",colnames(data)[2])

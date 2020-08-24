@@ -68,6 +68,7 @@ impute.res <- function(res, removed = c("snps", "sample", "none")){
   gene.snp.info <- gene.snp.info[snp.select, ]
   
   out <- list(SnpMatrix = imputed.snp.matrix, gene.info = gene.snp.info, sample.info = sample.fam.info)
+  class(out) <- c("GGIGCI.data", "list")
   return(out)
 }
 
